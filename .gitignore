@@ -1,0 +1,5 @@
+.DS_Store
+dist/
+assets_new/
+.workbuddy/
+data/schema/
