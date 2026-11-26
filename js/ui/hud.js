@@ -37,15 +37,23 @@
 
   JY.UI.renderAll = function () {
     if (!JY.S) return;
+    if ((!JY.World.curRegion() || !JY.World.curRoom()) && JY.normalizeState) {
+      JY.normalizeState(JY.S);
+    }
     const night = JY.isNight();
     document.body.classList.toggle("time-night", night);
-    JY.UI.renderTopbar();
-    JY.UI.renderNavRail();
-    JY.UI.renderSceneHead();
-    if (JY.UI.stageMode === "explore") JY.UI.renderExploreActions();
-    else if (JY.UI.stageMode === "story") JY.UI.renderTheater();
-    else if (JY.UI.stageMode === "combat") JY.UI.renderCombat();
-    if (JY.UI.refreshOpenModal) JY.UI.refreshOpenModal();
+    const safeRun = (name, fn) => {
+      try { fn(); } catch (err) {
+        if (typeof console !== "undefined" && console.error) console.error("[SH14 render error]", name, err);
+      }
+    };
+    safeRun("topbar", JY.UI.renderTopbar);
+    safeRun("navRail", JY.UI.renderNavRail);
+    safeRun("sceneHead", JY.UI.renderSceneHead);
+    if (JY.UI.stageMode === "explore") safeRun("explore", JY.UI.renderExploreActions);
+    else if (JY.UI.stageMode === "story") safeRun("story", JY.UI.renderTheater);
+    else if (JY.UI.stageMode === "combat") safeRun("combat", JY.UI.renderCombat);
+    if (JY.UI.refreshOpenModal) safeRun("modal", JY.UI.refreshOpenModal);
   };
 
   let toastTimer = null;

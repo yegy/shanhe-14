@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>山河十四卷 · 宋韵水墨武侠单机</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231b3a3c'/%3E%3Crect x='5' y='5' width='54' height='54' rx='8' fill='none' stroke='%23cfa85e' stroke-width='2.2'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='33' font-family='KaiTi,STKaiti,serif' font-weight='700' fill='%23f1f5f1'%3E%E5%8D%B7%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/main.css?v=1.0.1">
 </head>
 <body>
 <div id="app">
@@ -196,44 +196,22 @@
 </div>
 <div class="jy-toast" id="jy-toast"></div>
 
-<!-- ==================== 数据层（零构建模块化加载） ==================== -->
-<script src="data/core_registry.js"></script>
-<script src="data/skills_gear.js"></script>
-<script src="data/world/demo_regions.js"></script>
-<script src="data/world/regions_jiangnan.js"></script>
-<script src="data/world/regions_sects.js"></script>
-<script src="data/world/regions_frontier.js"></script>
-<script src="data/world/quest_rooms.js"></script>
-<script src="data/quests/ts_she_demo.js"></script>
-<script src="data/quests/ts_fei.js"></script>
-<script src="data/quests/ts_xue.js"></script>
-<script src="data/quests/ts_lian.js"></script>
-<script src="data/quests/ts_tian.js"></script>
-<script src="data/quests/ts_bai.js"></script>
-<script src="data/quests/ts_lu.js"></script>
-<script src="data/quests/ts_xiao.js"></script>
-<script src="data/quests/ts_shu.js"></script>
-<script src="data/quests/ts_shen.js"></script>
-<script src="data/quests/ts_xia.js"></script>
-<script src="data/quests/ts_yi.js"></script>
-<script src="data/quests/ts_bi.js"></script>
-<script src="data/quests/ts_yuan.js"></script>
-<script src="data/stories/sanxiu_demo.js"></script>
-<script src="data/stories/sects_long.js"></script>
-<script src="data/stories/mates_deep.js"></script>
-<script src="data/stories/finale_huashan.js"></script>
-<script src="data/events/bounties_demo.js"></script>
-<script src="data/events/bounties_full.js"></script>
-<script src="data/events/travel_events.js"></script>
-
-<!-- ==================== 核心引擎与 UI 层 ==================== -->
-<script src="js/core/state.js"></script>
-<script src="js/core/audio.js"></script>
-<script src="js/core/world.js"></script>
-<script src="js/core/combat.js"></script>
-<script src="js/core/story.js"></script>
-<script src="js/core/systems.js"></script>
-<script src="js/ui/hud.js"></script>
-<script src="js/ui/modals.js"></script>
+<!-- ==================== 单一原子脚本包（防弱网/CDN 丢包半加载） ==================== -->
+<script src="js/game.bundle.js?v=1.0.1"></script>
+<script>
+window.addEventListener("DOMContentLoaded", function () {
+  var ok = !!(window.JY && JY.UI && JY.World && JY.Story && JY.REGIONS && JY.REGIONS.yuelai);
+  if (ok) return;
+  var slotBox = document.getElementById("slot-list");
+  if (slotBox) {
+    slotBox.innerHTML = '<div class="slot-card" style="border-color:#b24035;background:#fff8f5;">' +
+      '<div class="slot-flag" style="color:#b24035;">加载中断</div>' +
+      '<div style="font-size:15px;font-weight:700;color:#8c2a21;">山河卷核心脚本未能完整下载</div>' +
+      '<div style="font-size:12.5px;color:#4a5e5e;line-height:1.7;">检测到当前网络访问 GitHub Pages 时脚本中断，请点击下方按钮重新加载；或前往仓库 Release 下载单文件离线版断网畅玩。</div>' +
+      '<div class="slot-acts"><button class="btn-primary btn-sm" onclick="location.reload()">🔄 重新加载页面</button></div>' +
+      '</div>';
+  }
+});
+</script>
 </body>
 </html>

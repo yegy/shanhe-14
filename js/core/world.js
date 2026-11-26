@@ -67,23 +67,34 @@
 
   // 一键跨区/本区寻路并自动开启目标人物交互（主线指引核心跳转入口）
   JY.World.guideNavigate = function (regionId, roomId, npcId) {
-    if (JY.Combat.active || JY.Story.active) return;
+    if (!JY.S || !JY.S.P) return;
+    if (JY.Combat.active || JY.Story.active) {
+      if (JY.UI && JY.UI.toast) JY.UI.toast("当前正处于剧情或战斗中，请先完成当前回合。", "warn");
+      return;
+    }
+    if (!JY.World.curRegion() && JY.normalizeState) JY.normalizeState(JY.S);
     if (JY.UI && JY.UI.closeModal) JY.UI.closeModal();
+    let moved = false;
     if (regionId && regionId !== JY.S.region) {
       JY.World.travelRegion(regionId);
       // 若精力不足未成行，或中途触发了旅途随机奇遇弹窗，则先停在当前状态
       if (JY.S.region !== regionId || (JY.UI && JY.UI.curModal)) return;
+      moved = true;
     }
     const reg = JY.World.curRegion();
     const targetRoom = (roomId && reg && reg.rooms[roomId]) ? roomId : (reg && reg.entry);
     if (targetRoom && targetRoom !== JY.S.room) {
-      JY.World.walkToRoom(targetRoom);
+      moved = JY.World.walkToRoom(targetRoom) || moved;
     }
+    const rm = JY.World.curRoom();
     if (npcId && JY.UI && JY.UI.openNpcModal) {
-      const rm = JY.World.curRoom();
       if (rm && (rm.npcs || []).some(n => n.id === npcId)) {
         JY.UI.openNpcModal(npcId);
+        return;
       }
+    }
+    if (!moved && rm && JY.UI && JY.UI.toast) {
+      JY.UI.toast(`你已身处「${rm.name}」，可直接在下方操作坞迎战、搜查或交互！`, "sys");
     }
   };
 
@@ -198,6 +209,7 @@
       if (!st.specials.taxue) {
         if (JY.S.P.energy < 8) {
           JY.addLog("你舟车劳顿精力不足（需 8 点），先去客栈歇息或打坐恢复吧。", "warn");
+          if (JY.UI && JY.UI.toast) JY.UI.toast("精力不足（需 8 点），请先打坐调息或去客栈歇息！", "warn");
           return;
         }
         JY.S.P.energy -= 8;

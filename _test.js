@@ -28,11 +28,9 @@ const sandbox = {
 sandbox.window = sandbox;
 vm.createContext(sandbox);
 
-// 按 index.html 真实顺序加载全部数据模块与核心引擎
-const indexHtml = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
-const scripts = [...indexHtml.matchAll(/<script src="([^"]+)"><\/script>/g)]
-  .map(m => m[1])
-  .filter(src => src.startsWith("data/") || src.startsWith("js/core/"));
+// 按 js/modules.json 真实顺序加载全部数据模块与核心引擎
+const allModules = JSON.parse(fs.readFileSync(path.join(ROOT, "js", "modules.json"), "utf8"));
+const scripts = allModules.filter(src => src.startsWith("data/") || src.startsWith("js/core/"));
 
 scripts.forEach(rel => vm.runInContext(fs.readFileSync(path.join(ROOT, rel), "utf8"), sandbox, { filename: rel }));
 
